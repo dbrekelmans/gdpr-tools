@@ -2,7 +2,6 @@
   "name": "dbrekelmans/gdpr-tools",
   "description": "Tools to help with GDPR compliance.",
   "license": "MIT",
-  "version": "0.0.1",
   "authors": [
     {
       "name": "Daniël Brekelmans"
