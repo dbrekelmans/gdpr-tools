@@ -1,0 +1,20 @@
+#database: drupal8
+
+database:
+  host: 127.0.0.1
+  port: 3306
+  name: drupal
+  user: drupal
+  password: drupal
+
+presets:
+- drupal8
+- drupal8-webform
+
+custom:
+  anonymise_test:
+    email: email
+    password: password-sha512
+    name: string|NULL
+    ip: ip
+    number: int|NULL

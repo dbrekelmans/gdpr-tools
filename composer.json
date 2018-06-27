@@ -1,0 +1,21 @@
+{
+  "name": "dbrekelmans/gdpr-tools",
+  "description": "Tools to help with GDPR compliance.",
+  "license": "MIT",
+  "version": "0.0.1",
+  "authors": [
+    {
+      "name": "Daniël Brekelmans"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "GdprTools\\": "src/"
+    }
+  },
+  "require": {
+    "symfony/yaml": "^4.1",
+    "doctrine/dbal": "^2.7",
+    "symfony/console": "^4.1"
+  }
+}
