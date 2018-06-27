@@ -2,7 +2,8 @@
 
 namespace GdprTools\Command;
 
-use GdprTools\Configuration\YamlParser;
+use GdprTools\Configuration\Configuration;
+use GdprTools\Database\Database;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,9 +34,21 @@ class AnonymiseCommand extends Command
 
     $file = $input->getArgument(self::ARGUMENT_FILE);
 
-    $yamlParser = new YamlParser($file);
-    $configuration = $yamlParser->getConfiguration();
+    $configuration = new Configuration($file, $io);
 
-    var_dump($configuration);
+    $database = new Database($configuration, $io);
+
+    $connection = $database->getConnection();
+
+    $io->success('Database connection succeeded.');
+
+    $result = $connection->query('SELECT * FROM anonymise_test');
+
+    $rows = [];
+    while ($row = $result->fetch()) {
+      array_push($rows, $row);
+    }
+
+    $io->table(array_keys($rows[0]), $rows);
   }
 }
