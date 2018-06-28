@@ -44,25 +44,39 @@ class Configuration {
    * Supports nested keys by passing a nested array as parameter.
    *
    * @param array $keys
-   * @param bool $exitOnErrors
+   * @param bool $printErrorsAndDie
    * @param array $configuration
    * @param string $nesting
    *
    * @return bool
    */
-  public function isAvailable(array $keys, $exitOnErrors = false, array $configuration = null, $nesting = '') {
+  public function isAvailable(array $keys, $printErrorsAndDie = false, array $configuration = null, $nesting = '') {
     if ($configuration === null) {
       $configuration = $this->configuration;
     }
 
     $isAvailable = true;
 
+    // Check all keys that are not an array
+    foreach ($keys as $key) {
+      if (!is_array($key) && !array_key_exists($key, $configuration)) {
+        $isAvailable = false;
+
+        if ($printErrorsAndDie) {
+          $this->io->error($nesting . $key . ' does not exist in configuration.');
+        }
+      }
+    }
+
     // Check all keys that are an array (and recursively check the array items)
     foreach (array_keys($keys) as $key) {
       if (is_array($keys[$key])) {
         if (!array_key_exists($key, $configuration)) {
           $isAvailable = false;
-          $this->io->error($nesting . $key . ' does not exist in configuration.');
+
+          if ($printErrorsAndDie) {
+            $this->io->error($nesting . $key . ' does not exist in configuration.');
+          }
         }
         else {
           $nestedAvailable = $this->isAvailable($keys[$key], false, $configuration[$key], $key . ':' . $nesting);
@@ -74,15 +88,7 @@ class Configuration {
       }
     }
 
-    // Check all keys that are not an array
-    foreach ($keys as $key) {
-      if (!is_array($key) && !array_key_exists($key, $configuration)) {
-        $isAvailable = false;
-        $this->io->error($nesting . $key . ' does not exist in configuration.');
-      }
-    }
-
-    if (!$isAvailable && $exitOnErrors) {
+    if (!$isAvailable && $printErrorsAndDie) {
       die();
     }
 
