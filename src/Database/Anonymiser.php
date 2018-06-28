@@ -51,8 +51,6 @@ class Anonymiser
         return;
       }
 
-      // TODO: foreach row (get rows by SELECT * FROM db) do foreach columns
-
       try {
         $result = $connection->query('SELECT * FROM ' . $table);
       }
@@ -86,7 +84,6 @@ class Anonymiser
         $where = $this->prepareWhere($row);
 
         try {
-          echo('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
           $connection->query('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
 
         }

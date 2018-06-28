@@ -48,26 +48,7 @@ class AnonymiseCommand extends Command
 
     $io->success('Database connection succeeded.');
 
-    $this->printTable('anonymise_test', $connection, $io);
-
     $anonymiser = new Anonymiser();
     $anonymiser->anonymise($configuration, $io);
-
-    $this->printTable('anonymise_test', $connection, $io);
-  }
-
-
-  /*
-   * TODO: Remove. For debugging purposes only.
-   */
-  protected function printTable($table, Connection $connection, SymfonyStyle $io) {
-    $result = $connection->query('SELECT * FROM ' . $table);
-
-    $rows = [];
-    while ($row = $result->fetch()) {
-      array_push($rows, $row);
-    }
-
-    $io->table(array_keys($rows[0]), $rows);
   }
 }
