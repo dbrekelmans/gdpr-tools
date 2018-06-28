@@ -2,22 +2,25 @@
 
 namespace GdprTools\Configuration\Types;
 
+use Faker\Factory;
 use GdprTools\Configuration\TypeInterface;
 
-class NullType implements TypeInterface
+class EmailType implements TypeInterface
 {
-
   /**
    * {@inheritdoc}
    */
   public static function name() {
-    return 'null';
+    return 'email';
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function anonymise() {
-    return null;
+  public static function anonymise()
+  {
+    $faker = Factory::create();
+
+    return $faker->email;
   }
 }

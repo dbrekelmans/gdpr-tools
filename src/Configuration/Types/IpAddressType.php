@@ -5,16 +5,15 @@ namespace GdprTools\Configuration\Types;
 use Faker\Factory;
 use GdprTools\Configuration\TypeInterface;
 
-class IntegerType implements TypeInterface {
-
-  const MIN_VALUE = -2147483648;
-  const MAX_VALUE = 2147483648;
+class IpAddressType implements TypeInterface
+{
 
   /**
    * {@inheritdoc}
    */
-  public static function name() {
-    return 'int';
+  public static function name()
+  {
+    return 'ip';
   }
 
   /**
@@ -24,6 +23,6 @@ class IntegerType implements TypeInterface {
   {
     $faker = Factory::create();
 
-    return $faker->numberBetween(static::MIN_VALUE, static::MAX_VALUE);
+    return $faker->ipv4;
   }
 }

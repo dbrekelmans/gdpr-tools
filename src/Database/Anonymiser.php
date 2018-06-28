@@ -58,7 +58,7 @@ class Anonymiser
           return;
         }
 
-        $io->success($typeObject::name()); // debug message
+        $io->success($typeObject::name() . ' => ' . $typeObject->anonymise()); // debug message
       }
     }
   }

@@ -11,4 +11,11 @@ interface TypeInterface
    * @return string
    */
   public static function name();
+
+  /**
+   * Returns anonymous content in this type's format.
+   *
+   * @return mixed
+   */
+  public static function anonymise();
 }
