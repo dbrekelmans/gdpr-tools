@@ -52,6 +52,8 @@ class AnonymiseCommand extends Command
 
     $anonymiser = new Anonymiser();
     $anonymiser->anonymise($configuration, $io);
+
+    $this->printTable('anonymise_test', $connection, $io);
   }
 
 

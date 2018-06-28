@@ -2,6 +2,7 @@
 
 namespace GdprTools\Database;
 
+use Doctrine\DBAL\DBALException;
 use GdprTools\Configuration\Configuration;
 use GdprTools\Configuration\TypeFactory;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -50,16 +51,52 @@ class Anonymiser
         return;
       }
 
-      foreach ($columns as $column => $type) {
-        $typeObject = TypeFactory::instance()->create($type);
+      // TODO: foreach row (get rows by SELECT * FROM db) do foreach columns
 
-        if ($typeObject === null) {
-          $io->error($type . ' type does not exist.');
-          return;
+      try {
+        $result = $connection->query('SELECT * FROM ' . $table);
+      }
+      catch (DBALException $e) {
+        $io->error($e);
+        return;
+      }
+
+      while ($row = $result->fetch()) {
+
+        $headers = array_keys($row);
+
+        $values = $row;
+        foreach ($columns as $column => $type) {
+          if (!in_array($column, $headers)) {
+            $io->error($column . ' does not exist in database.');
+            return;
+          }
+
+          $typeObject = TypeFactory::instance()->create($type);
+
+          if ($typeObject === null) {
+            $io->error($type . ' type does not exist.');
+            return;
+          }
+
+          $values[$column] = $typeObject->anonymise();
         }
 
-        $io->success($typeObject::name() . ' => ' . $typeObject->anonymise()); // debug message
+        $set = $this->prepareSet($headers, $values);
+        $where = $this->prepareWhere($row);
+
+        try {
+          echo('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
+          $connection->query('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
+
+        }
+        catch (DBALException $e) {
+          $io->error($e);
+          return;
+        }
       }
+
+      $io->success('Successfully anonymised ' . $table . '.');
     }
   }
 
@@ -73,5 +110,46 @@ class Anonymiser
     if (!$configuration->isAvailable(['presets'])) {
       return;
     }
+  }
+
+  protected function prepareSet(array $headers, array $values) {
+    $set = [];
+
+    foreach ($headers as $header) {
+      $value = $this->prepareValue($values[$header]);
+
+      array_push($set, '`' . $header . '` = ' . $value . '');
+    }
+
+    return implode(', ', $set);
+  }
+
+  protected function prepareWhere(array $row) {
+    $headers = array_keys($row);
+
+    $where = [];
+
+    foreach ($headers as $header) {
+      if ($row[$header] === null) {
+        continue;
+      }
+
+      $value = $this->prepareValue($row[$header]);
+
+      array_push($where, '`' . $header . '` = ' . $value . '');
+    }
+
+    return implode(' AND ', $where);
+  }
+
+  protected function prepareValue($value) {
+    if ($value === null) {
+      $value = 'NULL';
+    }
+    else if (!is_int($value)) {
+      $value = '\''. $value .'\'';
+    }
+
+    return $value;
   }
 }
