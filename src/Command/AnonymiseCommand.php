@@ -2,10 +2,8 @@
 
 namespace GdprTools\Command;
 
-use Doctrine\DBAL\Connection;
 use GdprTools\Configuration\Configuration;
 use GdprTools\Database\Anonymiser;
-use GdprTools\Database\Database;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,10 +41,6 @@ class AnonymiseCommand extends Command
     $file = $input->getArgument(self::ARGUMENT_FILE);
 
     $configuration = new Configuration($file, $io);
-    $database = new Database($configuration, $io);
-    $connection = $database->getConnection();
-
-    $io->success('Database connection succeeded.');
 
     $anonymiser = new Anonymiser();
     $anonymiser->anonymise($configuration, $io);
