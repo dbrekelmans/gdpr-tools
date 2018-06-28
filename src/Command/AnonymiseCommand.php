@@ -2,7 +2,9 @@
 
 namespace GdprTools\Command;
 
+use Doctrine\DBAL\Connection;
 use GdprTools\Configuration\Configuration;
+use GdprTools\Database\Anonymiser;
 use GdprTools\Database\Database;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,7 +26,7 @@ class AnonymiseCommand extends Command
       ->addArgument(
         self::ARGUMENT_FILE,
         InputArgument::REQUIRED,
-        'Where is the yaml configuration located')
+        'Where is the yaml configuration located?')
     ;
   }
 
@@ -35,14 +37,19 @@ class AnonymiseCommand extends Command
     $file = $input->getArgument(self::ARGUMENT_FILE);
 
     $configuration = new Configuration($file, $io);
-
     $database = new Database($configuration, $io);
-
     $connection = $database->getConnection();
 
     $io->success('Database connection succeeded.');
 
-    $result = $connection->query('SELECT * FROM anonymise_test');
+    $this->printTable('anonymise_test', $connection, $io);
+
+    $anonymiser = new Anonymiser();
+    $anonymiser->anonymise($configuration, $io);
+  }
+
+  protected function printTable($table, Connection $connection, SymfonyStyle $io) {
+    $result = $connection->query('SELECT * FROM ' . $table);
 
     $rows = [];
     while ($row = $result->fetch()) {
