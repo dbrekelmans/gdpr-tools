@@ -60,6 +60,9 @@ class Database {
     $this->connection = $connection;
   }
 
+  /**
+   * @return \Doctrine\DBAL\Connection
+   */
   public function getConnection() {
     return $this->connection;
   }

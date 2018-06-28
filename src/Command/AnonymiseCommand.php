@@ -17,6 +17,9 @@ class AnonymiseCommand extends Command
 
   const ARGUMENT_FILE = 'file';
 
+  /**
+   * {@inheritdoc}
+   */
   protected function configure()
   {
     $this
@@ -30,6 +33,9 @@ class AnonymiseCommand extends Command
     ;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function execute(InputInterface $input, OutputInterface $output)
   {
     $io = new SymfonyStyle($input, $output);
@@ -48,6 +54,10 @@ class AnonymiseCommand extends Command
     $anonymiser->anonymise($configuration, $io);
   }
 
+
+  /*
+   * TODO: Remove. For debugging purposes only.
+   */
   protected function printTable($table, Connection $connection, SymfonyStyle $io) {
     $result = $connection->query('SELECT * FROM ' . $table);
 

@@ -8,11 +8,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Anonymiser
 {
+
+  /**
+   * Anonymises database based on the configuration.
+   *
+   * @param \GdprTools\Configuration\Configuration $configuration
+   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+   */
   public function anonymise(Configuration $configuration, SymfonyStyle $io) {
     $this->anonymiseCustom($configuration, $io);
     $this->anonymisePreset($configuration, $io);
   }
 
+  /**
+   * Anonymises all custom tables found in the configuration
+   *
+   * @param \GdprTools\Configuration\Configuration $configuration
+   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+   */
   protected function anonymiseCustom(Configuration $configuration, SymfonyStyle $io) {
     if (!$configuration->isAvailable(['custom'])) {
       return;
@@ -50,6 +63,12 @@ class Anonymiser
     }
   }
 
+  /**
+   * Anonymises all presets found in the configuration.
+   *
+   * @param \GdprTools\Configuration\Configuration $configuration
+   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+   */
   protected function anonymisePreset(Configuration $configuration, SymfonyStyle $io) {
     if (!$configuration->isAvailable(['presets'])) {
       return;

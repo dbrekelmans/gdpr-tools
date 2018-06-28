@@ -7,13 +7,15 @@ class TypeFactory
   const TYPES_NAMESPACE = 'GdprTools\Configuration\Types';
   const TYPES_DIRECTORY = __DIR__ . '/Types/';
 
+  /** @var \GdprTools\Configuration\TypeFactory|null $instance */
   protected static $instance = null;
 
   /** @var \GdprTools\Configuration\TypeInterface[] $typeClasses */
   protected $typeClasses;
 
   /**
-   * Singleton. Private constructor so it cannot be instantiated.
+   * Singleton.
+   * Private constructor to prevent accidental instantiation.
    *
    * @param $typeClasses
    */
@@ -21,6 +23,11 @@ class TypeFactory
     $this->typeClasses = $typeClasses;
   }
 
+  /**
+   * Returns an instance of this class.
+   *
+   * @return \GdprTools\Configuration\TypeFactory
+   */
   public static function instance() {
     if (!isset(self::$instance)) {
       self::$instance = new TypeFactory(static::getTypeClasses());
