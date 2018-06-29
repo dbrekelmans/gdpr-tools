@@ -9,6 +9,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Anonymiser
 {
+  const OPERATOR_IS = '=';
+  const OPERATOR_IS_NOT = '!=';
 
   /**
    * Anonymises database based on the configuration.
@@ -28,22 +30,23 @@ class Anonymiser
    * @param \Symfony\Component\Console\Style\SymfonyStyle $io
    */
   protected function anonymiseCustom(Configuration $configuration, SymfonyStyle $io) {
-    if (!$configuration->isAvailable(['custom'])) {
+    if (!$configuration->isAvailable([Configuration::CATEGORY_CUSTOM])) {
       return;
     }
 
     $database = new Database($configuration, $io);
     $connection = $database->getConnection();
 
-    $custom = $configuration->toArray()['custom'];
+    $custom = $configuration->toArray()[Configuration::CATEGORY_CUSTOM];
     if (!is_array($custom)) {
-      $io->error('custom does not contain tables in the configuration.');
+      $io->error(Configuration::CATEGORY_CUSTOM . ' does not contain tables in the configuration.');
       return;
     }
 
     $tables = array_keys($custom);
 
     foreach ($tables as $table) {
+      $except = $configuration->getExcept(Configuration::CATEGORY_CUSTOM, $table);
       $columns = $custom[$table];
 
       if (!is_array($columns)) {
@@ -81,7 +84,7 @@ class Anonymiser
         }
 
         $set = $this->prepareSet($headers, $values);
-        $where = $this->prepareWhere($row);
+        $where = $this->prepareWhere($row, $except);
 
         try {
           $connection->query('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
@@ -121,9 +124,9 @@ class Anonymiser
     $set = [];
 
     foreach ($headers as $header) {
-      $value = $this->prepareValue($values[$header]);
+      $value = $this->prepareValue($values[$header], '=');
 
-      array_push($set, '`' . $header . '` = ' . $value . '');
+      array_push($set, '`' . $header . '` ' . $value . '');
     }
 
     return implode(', ', $set);
@@ -133,22 +136,29 @@ class Anonymiser
    * Prepares a where statement for a database query.
    *
    * @param array $row
+   * @param array $except
    *
    * @return string
    */
-  protected function prepareWhere(array $row) {
+  protected function prepareWhere(array $row, array $except) {
     $headers = array_keys($row);
 
     $where = [];
 
     foreach ($headers as $header) {
-      if ($row[$header] === null) {
-        continue;
+      $value = $this->prepareValue($row[$header], '=', true);
+
+      array_push($where, '`' . $header . '` ' . $value . '');
+    }
+
+    $exceptHeaders = array_keys($except);
+
+    foreach ($exceptHeaders as $exceptHeader) {
+      foreach ($except[$exceptHeader] as $value) {
+        $value = $this->prepareValue($value, '!=', true);
+
+        array_push($where, '`' . $exceptHeader . '` ' . $value . '');
       }
-
-      $value = $this->prepareValue($row[$header]);
-
-      array_push($where, '`' . $header . '` = ' . $value . '');
     }
 
     return implode(' AND ', $where);
@@ -157,18 +167,28 @@ class Anonymiser
   /**
    * Prepares a value for a database query.
    *
-   * @param $value
+   * @param mixed $value
+   *
+   * @param $operator
+   * @param bool $isWhere
    *
    * @return string
    */
-  protected function prepareValue($value) {
+  protected function prepareValue($value, $operator, $isWhere = false) {
     if ($value === null) {
       $value = 'NULL';
+
+      if ($isWhere && $operator === $this::OPERATOR_IS) {
+        $operator = 'IS';
+      }
+      else if ($isWhere && $operator === $this::OPERATOR_IS_NOT) {
+        $operator = 'IS NOT';
+      }
     }
     else if (!is_int($value)) {
       $value = '\''. $value .'\'';
     }
 
-    return $value;
+    return $operator . ' ' . $value;
   }
 }

@@ -34,7 +34,7 @@ class Database {
         'user',
         'password',
       ]
-    ], true);
+    ], true, true);
 
     $databaseConfiguration = new \Doctrine\DBAL\Configuration();
 
