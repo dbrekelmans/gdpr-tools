@@ -9,8 +9,8 @@ database:
   password: drupal
 
 presets:
-- drupal8
-- drupal8-webform
+  - drupal8
+  - drupal8-webform
 
 custom:
   anonymise_test:
@@ -19,3 +19,18 @@ custom:
     name: string|null
     ip: ip
     number: int|null
+
+except:
+  drupal8:
+    users_field_data_test:
+      uid:
+        - 1
+        - 46
+  custom:
+    anonymise_test:
+      id:
+        - 2
+        - 5
+        - 10023
+      email:
+        - lonzo35@grimes.com
