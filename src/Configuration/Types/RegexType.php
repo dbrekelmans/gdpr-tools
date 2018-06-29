@@ -2,7 +2,23 @@
 
 namespace GdprTools\Configuration\Types;
 
-class RegexType
+use GdprTools\Configuration\TypeInterface;
+
+class RegexType implements TypeInterface
 {
-  // TODO
+  /**
+   * {@inheritdoc}
+   */
+  public static function name() {
+    return 'regex';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function anonymise()
+  {
+    // TODO
+    return '';
+  }
 }
