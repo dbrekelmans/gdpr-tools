@@ -109,6 +109,14 @@ class Anonymiser
     }
   }
 
+  /**
+   * Prepares the SET for a database update query.
+   *
+   * @param array $headers
+   * @param array $values
+   *
+   * @return string
+   */
   protected function prepareSet(array $headers, array $values) {
     $set = [];
 
@@ -121,6 +129,13 @@ class Anonymiser
     return implode(', ', $set);
   }
 
+  /**
+   * Prepares a where statement for a database query.
+   *
+   * @param array $row
+   *
+   * @return string
+   */
   protected function prepareWhere(array $row) {
     $headers = array_keys($row);
 
@@ -139,6 +154,13 @@ class Anonymiser
     return implode(' AND ', $where);
   }
 
+  /**
+   * Prepares a value for a database query.
+   *
+   * @param $value
+   *
+   * @return string
+   */
   protected function prepareValue($value) {
     if ($value === null) {
       $value = 'NULL';
