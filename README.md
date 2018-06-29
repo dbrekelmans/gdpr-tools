@@ -3,6 +3,13 @@
 ## TODO
 * Polish README
 * Document yaml configuration specifications on github wiki
+* Add 'unique' boolean configuration for column
+* Add type options (optional, depending on which options the type offers)
+* RegexType
+* IbanType
+* CreditcardType
+* Change PasswordSha512Type to Sha512Type
+* Remove UsernameType
 
 ## Installation
 ```
