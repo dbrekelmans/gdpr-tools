@@ -10,6 +10,7 @@
 * CreditcardType
 * Change PasswordSha512Type to Sha512Type
 * Remove UsernameType (should be replaced by StringType or RegexType)
+* Support table name prefix for configuration presets
 
 ## Installation
 ```
