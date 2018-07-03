@@ -24,10 +24,10 @@ php vendor/gdpr-tools/console.php <command>
 
 ## Commands
 
-| Command | Description | Arguments | Options |
-| --- | --- | --- | --- |
-| `db:anonymise` | Anonymises database based on a yaml configuration. | __file__ - A yaml configuration file, must end with `.yml`. See _Configuration_ for details. | |
-| `db:truncate` | Truncates database tables based on a yaml configuration. | __file__ - A yaml configuration file, must end with `.yml`. See _Configuration_ for details. | |
+| Command | Description | Arguments |
+| --- | --- | --- |
+| `db:anonymise` | Anonymises database based on a yaml configuration. | __file__ - A yaml configuration file, must end with `.yml`. See _Configuration_ for details. |
+| `db:truncate` | Truncates database tables based on a yaml configuration. | __file__ - A yaml configuration file, must end with `.yml`. See _Configuration_ for details. |
 
 ## Configuration
 
