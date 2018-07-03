@@ -23,12 +23,21 @@ class Anonymiser
     array_push($presets, Configuration::ANONYMISE_CUSTOM);
 
     foreach ($presets as $preset) {
-      if (!$configuration->isAvailable([
-        Configuration::ANONYMISE => [
-          $preset
-        ]
-      ])) {
-        return;
+      if ($preset !== Configuration::ANONYMISE_CUSTOM) {
+        $configuration->isAvailable([
+          Configuration::ANONYMISE => [
+            $preset
+          ]
+        ], true, true);
+      }
+      else {
+        if (!$configuration->isAvailable([
+          Configuration::ANONYMISE => [
+            $preset
+          ]
+        ], false)) {
+          continue;
+        }
       }
 
       $configurationArray = $configuration->toArray()[Configuration::ANONYMISE][$preset];
