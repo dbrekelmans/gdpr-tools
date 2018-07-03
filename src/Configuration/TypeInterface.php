@@ -15,7 +15,10 @@ interface TypeInterface
   /**
    * Returns anonymous content in this type's format.
    *
+   * @param bool $unique
+   * @param array $options
+   *
    * @return mixed
    */
-  public static function anonymise();
+  public static function anonymise($unique = false, array $options = []);
 }

@@ -17,9 +17,13 @@ class EmailType implements TypeInterface
   /**
    * {@inheritdoc}
    */
-  public static function anonymise()
+  public static function anonymise($unique = false, array $options = [])
   {
     $faker = Factory::create();
+
+    if ($unique) {
+      $faker = $faker->unique();
+    }
 
     return $faker->email;
   }
