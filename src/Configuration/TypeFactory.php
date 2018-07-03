@@ -17,7 +17,7 @@ class TypeFactory
    * Singleton.
    * Private constructor to prevent accidental instantiation.
    *
-   * @param $typeClasses
+   * @param \GdprTools\Configuration\TypeInterface[] $typeClasses
    */
   private function __construct($typeClasses) {
     $this->typeClasses = $typeClasses;

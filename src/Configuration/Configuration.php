@@ -3,13 +3,19 @@
 namespace GdprTools\Configuration;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class Configuration {
 
-  const CATEGORY_PRESET = 'preset';
-  const CATEGORY_CUSTOM = 'custom';
-  const CATEGORY_EXCEPT = 'except';
+  const PRESETS = 'presets';
+  const CUSTOM = 'custom';
+  const EXCLUDE = 'exclude';
+
+  const COLUMN_TYPE = 'type';
+  const COLUMN_UNIQUE = 'unique';
+
+  const TYPE_OPTIONS = 'options';
 
   /** @var string $file */
   protected $file;
@@ -23,7 +29,7 @@ class Configuration {
   /**
    * Configuration constructor.
    *
-   * @param $file
+   * @param string $file
    * @param \Symfony\Component\Console\Style\SymfonyStyle $io
    */
   public function __construct($file, SymfonyStyle $io)
@@ -31,7 +37,18 @@ class Configuration {
     $this->file = $file;
     $this->io = $io;
 
-    $this->configuration = Yaml::parseFile($file);
+    try {
+      $this->configuration = Yaml::parseFile($file);
+    }
+    catch(ParseException $e) {
+      $this->io->error($file . ' is not a valid yaml configuration.');
+      die;
+    }
+
+    $presets = $this->configuration[self::PRESETS];
+    foreach($presets as $preset) {
+      $this->addPreset($preset);
+    }
   }
 
   /**
@@ -100,20 +117,42 @@ class Configuration {
     return $isAvailable;
   }
 
-  public function getExcept($presetOrCustom, $table) {
+  /**
+   * @param string $preset
+   * @param string $table
+   *
+   * @return array
+   */
+  public function getExclude($preset, $table) {
     if (!$this->isAvailable([
-      $this::CATEGORY_EXCEPT => [
-        $presetOrCustom => [
+      $this::EXCLUDE => [
+        $preset => [
           $table
         ]
       ]
-    ], true)) {
+    ], false)) {
       return [];
     }
 
-    return $this->configuration[$this::CATEGORY_EXCEPT][$presetOrCustom][$table];
+    return $this->configuration[$this::EXCLUDE][$preset][$table];
   }
 
+  /**
+   * @param string $preset
+   */
+  protected function addPreset($preset) {
+    try {
+      $this->configuration[$preset] = Yaml::parseFile(__DIR__ . '/Presets/' . $preset . '.yml');
+    }
+    catch (ParseException $e) {
+      $this->io->error($preset . ' is not a valid preset.');
+      die;
+    }
+  }
+
+  /**
+   * @param string $key
+   */
   protected function printNotAvailableError($key) {
     $this->io->error($key . ' does not exist in configuration.');
   }

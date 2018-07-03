@@ -16,7 +16,7 @@ class RegexType implements TypeInterface
   /**
    * {@inheritdoc}
    */
-  public static function anonymise()
+  public static function anonymise($unique = false, array $options = [])
   {
     // TODO
     return '';

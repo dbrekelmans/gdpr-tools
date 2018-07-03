@@ -17,7 +17,7 @@ class NullType implements TypeInterface
   /**
    * {@inheritdoc}
    */
-  public static function anonymise() {
+  public static function anonymise($unique = false, array $options = []) {
     return null;
   }
 }

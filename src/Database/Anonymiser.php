@@ -19,96 +19,101 @@ class Anonymiser
    * @param \Symfony\Component\Console\Style\SymfonyStyle $io
    */
   public function anonymise(Configuration $configuration, SymfonyStyle $io) {
-    $this->anonymiseCustom($configuration, $io);
-    $this->anonymisePreset($configuration, $io);
-  }
+    $presets = $configuration->toArray()[Configuration::PRESETS];
+    array_push($presets, Configuration::CUSTOM);
 
-  /**
-   * Anonymises all custom tables found in the configuration
-   *
-   * @param \GdprTools\Configuration\Configuration $configuration
-   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
-   */
-  protected function anonymiseCustom(Configuration $configuration, SymfonyStyle $io) {
-    if (!$configuration->isAvailable([Configuration::CATEGORY_CUSTOM])) {
-      return;
-    }
-
-    $database = new Database($configuration, $io);
-    $connection = $database->getConnection();
-
-    $custom = $configuration->toArray()[Configuration::CATEGORY_CUSTOM];
-    if (!is_array($custom)) {
-      $io->error(Configuration::CATEGORY_CUSTOM . ' does not contain tables in the configuration.');
-      return;
-    }
-
-    $tables = array_keys($custom);
-
-    foreach ($tables as $table) {
-      $except = $configuration->getExcept(Configuration::CATEGORY_CUSTOM, $table);
-      $columns = $custom[$table];
-
-      if (!is_array($columns)) {
-        $io->error($table . ' is does not contain columns in the configuration.');
+    foreach ($presets as $preset) {
+      if (!$configuration->isAvailable([$preset])) {
         return;
       }
 
-      try {
-        $result = $connection->query('SELECT * FROM ' . $table);
-      }
-      catch (DBALException $e) {
-        $io->error($e);
+      $configurationArray = $configuration->toArray()[$preset];
+      if (!is_array($configurationArray)) {
+        $io->error($preset . ' does not contain tables in the configuration.');
         return;
       }
 
-      while ($row = $result->fetch()) {
+      $database = new Database($configuration, $io);
+      $connection = $database->getConnection();
 
-        $headers = array_keys($row);
+      $tables = array_keys($configurationArray);
 
-        $values = $row;
-        foreach ($columns as $column => $type) {
-          if (!in_array($column, $headers)) {
-            $io->error($column . ' does not exist in database.');
-            return;
-          }
+      foreach ($tables as $table) {
+        $exclude = $configuration->getExclude($preset, $table);
+        $columns = $configurationArray[$table];
 
-          $typeObject = TypeFactory::instance()->create($type);
-
-          if ($typeObject === null) {
-            $io->error($type . ' type does not exist.');
-            return;
-          }
-
-          $values[$column] = $typeObject->anonymise();
+        if (!is_array($columns)) {
+          $io->error($table . ' is does not contain columns in the configuration.');
+          return;
         }
 
-        $set = $this->prepareSet($headers, $values);
-        $where = $this->prepareWhere($row, $except);
-
         try {
-          $connection->query('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
-
+          $result = $connection->query('SELECT * FROM ' . $table);
         }
         catch (DBALException $e) {
           $io->error($e);
           return;
         }
+
+        while ($row = $result->fetch()) {
+
+          $headers = array_keys($row);
+
+          $values = $row;
+          foreach ($columns as $column => $data) {
+            if (!in_array($column, $headers)) {
+              $io->error($column . ' does not exist in the database.');
+              return;
+            }
+
+            $configuration->isAvailable([
+              $table => [
+                $column => [
+                  Configuration::COLUMN_TYPE,
+                ],
+              ],
+            ], true, true, $configurationArray);
+
+            $type = $configurationArray[$table][$column][Configuration::COLUMN_TYPE];
+            $unique = false;
+
+            if ($configuration->isAvailable([
+                Configuration::CUSTOM => [
+                  $table => [
+                    $column => [
+                      Configuration::COLUMN_UNIQUE,
+                    ],
+                  ],
+                ],
+              ], false) && $configurationArray[$table][$column][Configuration::COLUMN_UNIQUE] === true) {
+              $unique = true;
+            }
+
+            $typeObject = TypeFactory::instance()->create($type);
+
+            if ($typeObject === null) {
+              $io->error($type . ' type does not exist.');
+              return;
+            }
+
+            $values[$column] = $typeObject::anonymise($unique);
+          }
+
+          $set = $this->prepareSet($headers, $values);
+          $where = $this->prepareWhere($row, $exclude);
+
+          try {
+            $connection->query('UPDATE ' . $table . ' SET ' . $set . ' WHERE ' . $where . ';');
+
+          }
+          catch (DBALException $e) {
+            $io->error($e);
+            return;
+          }
+        }
+
+        $io->success('Successfully anonymised ' . $table . '.');
       }
-
-      $io->success('Successfully anonymised ' . $table . '.');
-    }
-  }
-
-  /**
-   * Anonymises all presets found in the configuration.
-   *
-   * @param \GdprTools\Configuration\Configuration $configuration
-   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
-   */
-  protected function anonymisePreset(Configuration $configuration, SymfonyStyle $io) {
-    if (!$configuration->isAvailable(['presets'])) {
-      return;
     }
   }
 
@@ -136,11 +141,11 @@ class Anonymiser
    * Prepares a where statement for a database query.
    *
    * @param array $row
-   * @param array $except
+   * @param array $exclude
    *
    * @return string
    */
-  protected function prepareWhere(array $row, array $except) {
+  protected function prepareWhere(array $row, array $exclude) {
     $headers = array_keys($row);
 
     $where = [];
@@ -151,13 +156,13 @@ class Anonymiser
       array_push($where, '`' . $header . '` ' . $value . '');
     }
 
-    $exceptHeaders = array_keys($except);
+    $excludeHeaders = array_keys($exclude);
 
-    foreach ($exceptHeaders as $exceptHeader) {
-      foreach ($except[$exceptHeader] as $value) {
+    foreach ($excludeHeaders as $excludeHeader) {
+      foreach ($exclude[$excludeHeader] as $value) {
         $value = $this->prepareValue($value, '!=', true);
 
-        array_push($where, '`' . $exceptHeader . '` ' . $value . '');
+        array_push($where, '`' . $excludeHeader . '` ' . $value . '');
       }
     }
 
