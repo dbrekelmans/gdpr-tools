@@ -10,20 +10,26 @@ database:
 
 presets:
   - drupal8
-  - drupal8-webform
 
 custom:
   anonymise_test:
-    email: email
-    password: password-sha512
-    name: string|null
-    ip: ip
-    number: int|null
+    email:
+      type: email
+      unique: true
+    password:
+      type: password-sha512
+    name:
+      type: string|null
+    ip:
+      type: ip
+    number:
+      type: int|null
 
-except:
+exclude:
   drupal8:
     users_field_data_test:
       uid:
+        - 0
         - 1
         - 46
   custom:
@@ -33,4 +39,4 @@ except:
         - 5
         - 10023
       email:
-        - lonzo35@grimes.com
+        - bianka.bartell@yahoo.com

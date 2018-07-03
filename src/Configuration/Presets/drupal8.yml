@@ -1,0 +1,14 @@
+users_field_data_test:
+  name:
+    type: username
+    unique: true
+  pass:
+    type: password-sha512
+  mail:
+    type: email
+    unique: true
+#  init:
+#    type:
+#      name: duplicate
+#      options:
+#        column: mail

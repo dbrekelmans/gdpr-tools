@@ -3,6 +3,7 @@
 namespace GdprTools\Configuration;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class Configuration {
@@ -36,7 +37,18 @@ class Configuration {
     $this->file = $file;
     $this->io = $io;
 
-    $this->configuration = Yaml::parseFile($file);
+    try {
+      $this->configuration = Yaml::parseFile($file);
+    }
+    catch(ParseException $e) {
+      $this->io->error($file . ' is not a valid yaml configuration.');
+      die;
+    }
+
+    $presets = $this->configuration[self::PRESETS];
+    foreach($presets as $preset) {
+      $this->addPreset($preset);
+    }
   }
 
   /**
@@ -106,15 +118,15 @@ class Configuration {
   }
 
   /**
-   * @param string $presetOrCustom
+   * @param string $preset
    * @param string $table
    *
    * @return array
    */
-  public function getExclude($presetOrCustom, $table) {
+  public function getExclude($preset, $table) {
     if (!$this->isAvailable([
       $this::EXCLUDE => [
-        $presetOrCustom => [
+        $preset => [
           $table
         ]
       ]
@@ -122,16 +134,20 @@ class Configuration {
       return [];
     }
 
-    return $this->configuration[$this::EXCLUDE][$presetOrCustom][$table];
+    return $this->configuration[$this::EXCLUDE][$preset][$table];
   }
 
   /**
    * @param string $preset
-   *
-   * @return array
    */
-  public static function fromPreset($preset) {
-    return Yaml::parseFile(__DIR__ . '/Presets/' . $preset . '.yml');
+  protected function addPreset($preset) {
+    try {
+      $this->configuration[$preset] = Yaml::parseFile(__DIR__ . '/Presets/' . $preset . '.yml');
+    }
+    catch (ParseException $e) {
+      $this->io->error($preset . ' is not a valid preset.');
+      die;
+    }
   }
 
   /**
