@@ -7,9 +7,14 @@ use Symfony\Component\Yaml\Yaml;
 
 class Configuration {
 
-  const CATEGORY_PRESET = 'preset';
-  const CATEGORY_CUSTOM = 'custom';
-  const CATEGORY_EXCEPT = 'except';
+  const PRESETS = 'presets';
+  const CUSTOM = 'custom';
+  const EXCLUDE = 'exclude';
+
+  const COLUMN_TYPE = 'type';
+  const COLUMN_UNIQUE = 'unique';
+
+  const TYPE_OPTIONS = 'options';
 
   /** @var string $file */
   protected $file;
@@ -23,7 +28,7 @@ class Configuration {
   /**
    * Configuration constructor.
    *
-   * @param $file
+   * @param string $file
    * @param \Symfony\Component\Console\Style\SymfonyStyle $io
    */
   public function __construct($file, SymfonyStyle $io)
@@ -100,20 +105,38 @@ class Configuration {
     return $isAvailable;
   }
 
-  public function getExcept($presetOrCustom, $table) {
+  /**
+   * @param string $presetOrCustom
+   * @param string $table
+   *
+   * @return array
+   */
+  public function getExclude($presetOrCustom, $table) {
     if (!$this->isAvailable([
-      $this::CATEGORY_EXCEPT => [
+      $this::EXCLUDE => [
         $presetOrCustom => [
           $table
         ]
       ]
-    ], true)) {
+    ], false)) {
       return [];
     }
 
-    return $this->configuration[$this::CATEGORY_EXCEPT][$presetOrCustom][$table];
+    return $this->configuration[$this::EXCLUDE][$presetOrCustom][$table];
   }
 
+  /**
+   * @param string $preset
+   *
+   * @return array
+   */
+  public static function fromPreset($preset) {
+    return Yaml::parseFile(__DIR__ . '/Presets/' . $preset . '.yml');
+  }
+
+  /**
+   * @param string $key
+   */
   protected function printNotAvailableError($key) {
     $this->io->error($key . ' does not exist in configuration.');
   }

@@ -1,9 +1,11 @@
 # GDPR-Tools
 
 ## TODO
+* Abstract anonymise preset/custom
+* Fix $unique in abstract anonymise
+* Check if unique generated value already exists in current database (otherwise get duplicate constraint on UPDATE because we update row by row)
 * Polish README
 * Document yaml configuration specifications on github wiki
-* Add 'unique' boolean configuration for column
 * Add type options (optional, depending on which options the type offers)
 * RegexType
 * IbanType
