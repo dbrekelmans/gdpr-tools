@@ -67,7 +67,7 @@ anonymise:
             min: 0
             max: 100
         
-  except:
+  exclude:
     drupal8:
       users_field_data:
         uid:
