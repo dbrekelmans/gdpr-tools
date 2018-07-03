@@ -1,6 +1,7 @@
 # GDPR-Tools
 
 ## TODO
+* Support presets and custom for truncate configuration
 * Check if unique generated value already exists in current database (otherwise get duplicate constraint on UPDATE because we update row by row)
 * Polish README
 * Document yaml configuration specifications on github wiki
