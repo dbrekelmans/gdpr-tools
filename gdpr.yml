@@ -9,9 +9,26 @@ database:
   password: drupal
 
 truncate:
-  - truncate_test
-#  - webform_submission
-#  - webform_submission_data
+  - watchdog
+  - sessions
+  - cache_bootstrap
+  - cache_config
+  - cache_container
+  - cache_data
+  - cache_default
+  - cache_discovery
+  - cache_dynamic_page_cache
+  - cache_entity
+  - cache_menu
+  - cache_page
+  - cache_render
+  - cache_rest
+  - cache_toolbar
+  - cachetags
+  - webform_submission
+  - webform_submission_data
+  - webform_submission_log
+  - z_tickets_log
 
 anonymise:
   presets:
