@@ -19,15 +19,19 @@ class Anonymiser
    * @param \Symfony\Component\Console\Style\SymfonyStyle $io
    */
   public function anonymise(Configuration $configuration, SymfonyStyle $io) {
-    $presets = $configuration->toArray()[Configuration::PRESETS];
-    array_push($presets, Configuration::CUSTOM);
+    $presets = $configuration->toArray()[Configuration::ANONYMISE][Configuration::ANONYMISE_PRESETS];
+    array_push($presets, Configuration::ANONYMISE_CUSTOM);
 
     foreach ($presets as $preset) {
-      if (!$configuration->isAvailable([$preset])) {
+      if (!$configuration->isAvailable([
+        Configuration::ANONYMISE => [
+          $preset
+        ]
+      ])) {
         return;
       }
 
-      $configurationArray = $configuration->toArray()[$preset];
+      $configurationArray = $configuration->toArray()[Configuration::ANONYMISE][$preset];
       if (!is_array($configurationArray)) {
         $io->error($preset . ' does not contain tables in the configuration.');
         return;
@@ -69,23 +73,23 @@ class Anonymiser
             $configuration->isAvailable([
               $table => [
                 $column => [
-                  Configuration::COLUMN_TYPE,
+                  Configuration::ANONYMISE_COLUMN_TYPE,
                 ],
               ],
             ], true, true, $configurationArray);
 
-            $type = $configurationArray[$table][$column][Configuration::COLUMN_TYPE];
+            $type = $configurationArray[$table][$column][Configuration::ANONYMISE_COLUMN_TYPE];
             $unique = false;
 
             if ($configuration->isAvailable([
-                Configuration::CUSTOM => [
+                Configuration::ANONYMISE_CUSTOM => [
                   $table => [
                     $column => [
-                      Configuration::COLUMN_UNIQUE,
+                      Configuration::ANONYMISE_COLUMN_UNIQUE,
                     ],
                   ],
                 ],
-              ], false) && $configurationArray[$table][$column][Configuration::COLUMN_UNIQUE] === true) {
+              ], false) && $configurationArray[$table][$column][Configuration::ANONYMISE_COLUMN_UNIQUE] === true) {
               $unique = true;
             }
 

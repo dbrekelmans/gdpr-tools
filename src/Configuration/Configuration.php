@@ -7,15 +7,17 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class Configuration {
+  const TRUNCATE = 'truncate';
+  const ANONYMISE = 'anonymise';
 
-  const PRESETS = 'presets';
-  const CUSTOM = 'custom';
-  const EXCLUDE = 'exclude';
+  const ANONYMISE_PRESETS = 'presets';
+  const ANONYMISE_CUSTOM = 'custom';
+  const ANONYMISE_EXCLUDE = 'exclude';
 
-  const COLUMN_TYPE = 'type';
-  const COLUMN_UNIQUE = 'unique';
+  const ANONYMISE_COLUMN_TYPE = 'type';
+  const ANONYMISE_COLUMN_UNIQUE = 'unique';
 
-  const TYPE_OPTIONS = 'options';
+  const ANONYMISE_TYPE_OPTIONS = 'options';
 
   /** @var string $file */
   protected $file;
@@ -45,7 +47,7 @@ class Configuration {
       die;
     }
 
-    $presets = $this->configuration[self::PRESETS];
+    $presets = $this->configuration[self::ANONYMISE][self::ANONYMISE_PRESETS];
     foreach($presets as $preset) {
       $this->addPreset($preset);
     }
@@ -125,16 +127,18 @@ class Configuration {
    */
   public function getExclude($preset, $table) {
     if (!$this->isAvailable([
-      $this::EXCLUDE => [
-        $preset => [
-          $table
-        ]
-      ]
+      self::ANONYMISE => [
+        self::ANONYMISE_EXCLUDE => [
+          $preset => [
+            $table
+          ],
+        ],
+      ],
     ], false)) {
       return [];
     }
 
-    return $this->configuration[$this::EXCLUDE][$preset][$table];
+    return $this->configuration[self::ANONYMISE][self::ANONYMISE_EXCLUDE][$preset][$table];
   }
 
   /**
@@ -142,7 +146,7 @@ class Configuration {
    */
   protected function addPreset($preset) {
     try {
-      $this->configuration[$preset] = Yaml::parseFile(__DIR__ . '/Presets/' . $preset . '.yml');
+      $this->configuration[self::ANONYMISE][$preset] = Yaml::parseFile(__DIR__ . '/Presets/' . $preset . '.yml');
     }
     catch (ParseException $e) {
       $this->io->error($preset . ' is not a valid preset.');
