@@ -1,4 +1,4 @@
-users_field_data_test:
+users_field_data:
   name:
     type: username
     unique: true
@@ -7,6 +7,8 @@ users_field_data_test:
   mail:
     type: email
     unique: true
+  init:
+    type: null
 #  init:
 #    type:
 #      name: duplicate

@@ -42,6 +42,10 @@ class TypeFactory
    * @return \GdprTools\Configuration\TypeInterface|null
    */
   public function create($typesString) {
+    if ($typesString === null) {
+      $typesString = 'null';
+    }
+
     $types = explode('|', $typesString);
     $type = $types[array_rand($types)];
 
