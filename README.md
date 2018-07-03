@@ -41,6 +41,10 @@ database:
   user: dbuser
   password: dbpass
 
+truncate:
+  - webform_submissions
+  - webform_submissions_data
+
 anonymise:
   presets:
     - drupal8
