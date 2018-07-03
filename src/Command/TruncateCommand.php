@@ -4,6 +4,7 @@ namespace GdprTools\Command;
 
 use GdprTools\Configuration\Configuration;
 use GdprTools\Database\Anonymiser;
+use GdprTools\Database\Truncator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
