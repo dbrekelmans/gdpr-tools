@@ -1,8 +1,6 @@
 # GDPR-Tools
 
 ## TODO
-* Abstract anonymise preset/custom
-* Fix $unique in abstract anonymise
 * Check if unique generated value already exists in current database (otherwise get duplicate constraint on UPDATE because we update row by row)
 * Polish README
 * Document yaml configuration specifications on github wiki
@@ -11,7 +9,7 @@
 * IbanType
 * CreditcardType
 * Change PasswordSha512Type to Sha512Type
-* Remove UsernameType
+* Remove UsernameType (should be replaced by StringType or RegexType)
 
 ## Installation
 ```
