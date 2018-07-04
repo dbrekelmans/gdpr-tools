@@ -19,7 +19,16 @@ class Anonymiser
    * @param \Symfony\Component\Console\Style\SymfonyStyle $io
    */
   public function anonymise(Configuration $configuration, SymfonyStyle $io) {
-    $presets = $configuration->toArray()[Configuration::ANONYMISE][Configuration::ANONYMISE_PRESETS];
+    $presets = [];
+
+    if ($configuration->isAvailable([
+      Configuration::ANONYMISE => [
+        Configuration::ANONYMISE_PRESETS
+      ]
+    ], false)) {
+      $presets = $configuration->toArray()[Configuration::ANONYMISE][Configuration::ANONYMISE_PRESETS];
+    }
+
     array_push($presets, Configuration::ANONYMISE_CUSTOM);
 
     foreach ($presets as $preset) {
@@ -82,12 +91,14 @@ class Anonymiser
             $configuration->isAvailable([
               $table => [
                 $column => [
-                  Configuration::ANONYMISE_COLUMN_TYPE,
+                  Configuration::ANONYMISE_COLUMN_TYPE => [
+                    Configuration::ANONYMISE_TYPE_NAME
+                  ],
                 ],
               ],
             ], true, true, $configurationArray);
 
-            $type = $configurationArray[$table][$column][Configuration::ANONYMISE_COLUMN_TYPE];
+            $type = $configurationArray[$table][$column][Configuration::ANONYMISE_COLUMN_TYPE][Configuration::ANONYMISE_TYPE_NAME];
             $unique = false;
 
             if ($configuration->isAvailable([
@@ -109,7 +120,20 @@ class Anonymiser
               return;
             }
 
-            $values[$column] = $typeObject::anonymise($unique);
+            $options = [];
+            if ($configuration->isAvailable([
+              $table => [
+                $column => [
+                  Configuration::ANONYMISE_COLUMN_TYPE => [
+                    Configuration::ANONYMISE_TYPE_OPTIONS
+                  ],
+                ],
+              ],
+            ], false, false, $configurationArray)) {
+              $options = $configurationArray[$table][$column][Configuration::ANONYMISE_COLUMN_TYPE][Configuration::ANONYMISE_TYPE_OPTIONS];
+            }
+
+            $values[$column] = $typeObject::anonymise($unique, $options);
           }
 
           $set = $this->prepareSet($headers, $values);

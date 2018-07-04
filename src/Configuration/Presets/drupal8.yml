@@ -1,14 +1,23 @@
 users_field_data:
   name:
-    type: username
+    type:
+      name: string
+      options:
+        minlength: 4
+        maxlength: 20
     unique: true
   pass:
-    type: password-sha512
+    type:
+      name: password
+      options:
+        encryption: sha512
   mail:
-    type: email
+    type:
+      name: email
     unique: true
   init:
-    type: null
+    type:
+      name: null
 #  init:
 #    type:
 #      name: duplicate
