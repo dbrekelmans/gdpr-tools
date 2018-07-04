@@ -2,9 +2,10 @@
 
 namespace GdprTools\Configuration\Types;
 
+use GdprTools\Configuration\TypeBase;
 use GdprTools\Configuration\TypeInterface;
 
-class RegexType implements TypeInterface
+class RegexType extends TypeBase implements TypeInterface
 {
   /**
    * {@inheritdoc}

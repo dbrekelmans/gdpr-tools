@@ -3,9 +3,10 @@
 namespace GdprTools\Configuration\Types;
 
 use Faker\Factory;
+use GdprTools\Configuration\TypeBase;
 use GdprTools\Configuration\TypeInterface;
 
-class EmailType implements TypeInterface
+class EmailType extends TypeBase implements TypeInterface
 {
   /**
    * {@inheritdoc}

@@ -3,9 +3,10 @@
 namespace GdprTools\Configuration\Types;
 
 use Faker\Factory;
+use GdprTools\Configuration\TypeBase;
 use GdprTools\Configuration\TypeInterface;
 
-class IntegerType implements TypeInterface {
+class IntegerType extends TypeBase implements TypeInterface {
 
   const MIN_VALUE = -2147483648;
   const MAX_VALUE = 2147483648;
@@ -28,6 +29,6 @@ class IntegerType implements TypeInterface {
       $faker = $faker->unique();
     }
 
-    return $faker->numberBetween(static::MIN_VALUE, static::MAX_VALUE);
+    return $faker->numberBetween(self::MIN_VALUE, self::MAX_VALUE);
   }
 }

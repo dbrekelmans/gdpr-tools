@@ -2,9 +2,10 @@
 
 namespace GdprTools\Configuration\Types;
 
+use GdprTools\Configuration\TypeBase;
 use GdprTools\Configuration\TypeInterface;
 
-class NullType implements TypeInterface
+class NullType extends TypeBase implements TypeInterface
 {
 
   /**

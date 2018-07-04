@@ -30,7 +30,7 @@ class TypeFactory
    */
   public static function instance() {
     if (!isset(self::$instance)) {
-      self::$instance = new TypeFactory(static::getTypeClasses());
+      self::$instance = new TypeFactory(self::getTypeClasses());
     }
 
     return self::$instance;

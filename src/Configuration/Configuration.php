@@ -17,6 +17,7 @@ class Configuration {
   const ANONYMISE_COLUMN_TYPE = 'type';
   const ANONYMISE_COLUMN_UNIQUE = 'unique';
 
+  const ANONYMISE_TYPE_NAME = 'name';
   const ANONYMISE_TYPE_OPTIONS = 'options';
 
   /** @var string $file */
@@ -47,10 +48,7 @@ class Configuration {
       die;
     }
 
-    $presets = $this->configuration[self::ANONYMISE][self::ANONYMISE_PRESETS];
-    foreach($presets as $preset) {
-      $this->addPreset($preset);
-    }
+    $this->addPresets();
   }
 
   /**
@@ -139,6 +137,21 @@ class Configuration {
     }
 
     return $this->configuration[self::ANONYMISE][self::ANONYMISE_EXCLUDE][$preset][$table];
+  }
+
+  protected function addPresets() {
+    if (!$this->isAvailable([
+      self::ANONYMISE => [
+        self:: ANONYMISE_PRESETS,
+      ],
+    ], false, false)) {
+      return;
+    }
+
+    $presets = $this->configuration[self::ANONYMISE][self::ANONYMISE_PRESETS];
+    foreach($presets as $preset) {
+      $this->addPreset($preset);
+    }
   }
 
   /**
