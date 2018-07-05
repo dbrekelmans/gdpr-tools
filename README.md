@@ -33,6 +33,17 @@ php vendor/gdpr-tools/console.php <command>
 
 ## Configuration
 
+### Types
+| Type | Options | Description |
+| --- | --- | --- |
+| `string` | `minlength`, `maxlength` | Random string of a-z characters with length between `minlength` and `maxlength`. |
+| `int` | `min`, `max` | A random integer between `min` and `max` (inclusive). |
+| `email` | | Valid email address. |
+| `ip` | | Valid IPv4 address. |
+| `regex` | `pattern` | Random string based on regex `pattern` |
+| `null` | | A NULL value |
+| `password` | `encryption` | A password |
+
 #### Example
 ```yaml
 database:
