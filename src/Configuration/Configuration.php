@@ -7,6 +7,9 @@ use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
 class Configuration {
+  const ENV_VAR_PREFIX = '${';
+  const ENV_VAR_SUFFIX = '}';
+
   const TRUNCATE = 'truncate';
   const ANONYMISE = 'anonymise';
 
@@ -48,6 +51,7 @@ class Configuration {
       die;
     }
 
+    $this->replaceEnvVars($this->configuration, $io);
     $this->addPresets();
   }
 
@@ -139,6 +143,9 @@ class Configuration {
     return $this->configuration[self::ANONYMISE][self::ANONYMISE_EXCLUDE][$preset][$table];
   }
 
+  /**
+   * Adds all presets to the configuration array.
+   */
   protected function addPresets() {
     if (!$this->isAvailable([
       self::ANONYMISE => [
@@ -155,6 +162,8 @@ class Configuration {
   }
 
   /**
+   * Adds a preset to the configuration array
+   *
    * @param string $preset
    */
   protected function addPreset($preset) {
@@ -172,5 +181,35 @@ class Configuration {
    */
   protected function printNotAvailableError($key) {
     $this->io->error($key . ' does not exist in configuration.');
+  }
+
+  /**
+   * Replaces env vars in the configuration with actual env var values.
+   *
+   * @param array $configurationArray
+   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
+   * @param array $keys
+   */
+  protected function replaceEnvVars(array $configurationArray, SymfonyStyle $io, array $keys = []) {
+    array_walk_recursive($configurationArray, function (&$value, SymfonyStyle $io) {
+      if (
+        substr($value, 0, strlen(self::ENV_VAR_PREFIX)) === self::ENV_VAR_PREFIX &&
+        substr($value, -1, strlen(self::ENV_VAR_SUFFIX)) === self::ENV_VAR_SUFFIX
+      ) {
+        $tempValue = $value;
+
+        $tempValue = substr($tempValue, strlen(self::ENV_VAR_PREFIX) - 1);
+        $tempValue = substr($tempValue, 0, strlen($tempValue) - strlen(self::ENV_VAR_SUFFIX));
+
+        $envValue = getenv($tempValue);
+
+        if ($envValue === false) {
+          $io->error($tempValue . ' is not an existing environment variable.');
+          die;
+        }
+
+        $value = $envValue;
+      }
+    });
   }
 }
