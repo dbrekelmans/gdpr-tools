@@ -14,7 +14,7 @@ composer require dbrekelmans/gdpr-tools
 
 ## Usage
 ```
-php vendor/gdpr-tools/console.php <command>
+php vendor/dbrekelmans/gdpr-tools/console.php <command>
 ```
 
 ## Commands
