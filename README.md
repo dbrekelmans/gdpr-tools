@@ -59,14 +59,20 @@ anonymise:
   custom:
     anonymise_example:
       email:
-        type: email
+        type: 
+          name: email
         unique: true
       password:
-        type: password-sha512
+        type:
+          name: password
+          options:
+            encryption: sha512
       name:
-        type: string|null
+        type: 
+          name: string|null
       ip:
-        type: ip
+        type:
+          name: ip
       number:
         type:
           name: int|null
@@ -82,7 +88,7 @@ anonymise:
           - 1
           - 46
     custom:
-      anonymise_test:
+      anonymise_example:
         id:
           - 2
           - 5
