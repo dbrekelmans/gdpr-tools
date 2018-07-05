@@ -23,9 +23,6 @@ class Configuration {
   const ANONYMISE_TYPE_NAME = 'name';
   const ANONYMISE_TYPE_OPTIONS = 'options';
 
-  /** @var string $file */
-  protected $file;
-
   /** @var array $configuration */
   protected $configuration;
 
@@ -40,7 +37,6 @@ class Configuration {
    */
   public function __construct($file, SymfonyStyle $io)
   {
-    $this->file = $file;
     $this->io = $io;
 
     try {
@@ -51,7 +47,7 @@ class Configuration {
       die;
     }
 
-    $this->replaceEnvVars($this->configuration, $io);
+    $this->replaceEnvVars($this->configuration);
     $this->addPresets();
   }
 
@@ -187,11 +183,9 @@ class Configuration {
    * Replaces env vars in the configuration with actual env var values.
    *
    * @param array $configurationArray
-   * @param \Symfony\Component\Console\Style\SymfonyStyle $io
-   * @param array $keys
    */
-  protected function replaceEnvVars(array $configurationArray, SymfonyStyle $io, array $keys = []) {
-    array_walk_recursive($configurationArray, function (&$value, SymfonyStyle $io) {
+  protected function replaceEnvVars(array $configurationArray) {
+    array_walk_recursive($configurationArray, function (&$value) {
       if (
         substr($value, 0, strlen(self::ENV_VAR_PREFIX)) === self::ENV_VAR_PREFIX &&
         substr($value, -1, strlen(self::ENV_VAR_SUFFIX)) === self::ENV_VAR_SUFFIX
@@ -204,7 +198,7 @@ class Configuration {
         $envValue = getenv($tempValue);
 
         if ($envValue === false) {
-          $io->error($tempValue . ' is not an existing environment variable.');
+          $this->io->error($tempValue . ' is not an existing environment variable.');
           die;
         }
 
