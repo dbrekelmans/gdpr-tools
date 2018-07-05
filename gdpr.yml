@@ -1,10 +1,10 @@
 database:
-  scheme: pdo_mysql
-  host: 127.0.0.1
-  port: 3306
-  name: drupal
-  user: drupal
-  password: drupal
+  scheme: ${DB_SCHEME}
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  name: ${DB_NAME}
+  user: ${DB_USER}
+  password: ${DB_PASSWORD}
 
 truncate:
   - watchdog
