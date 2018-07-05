@@ -5,12 +5,6 @@
 * Check if unique generated value already exists in current database (otherwise get duplicate constraint on UPDATE because we update row by row)
 * Polish README
 * Document yaml configuration specifications on github wiki
-* Add type options (optional, depending on which options the type offers)
-* RegexType
-* IbanType
-* CreditcardType
-* Change PasswordSha512Type to Sha512Type
-* Remove UsernameType (should be replaced by StringType or RegexType)
 * Support table name prefix for configuration presets
 
 ## Installation
@@ -40,9 +34,9 @@ php vendor/gdpr-tools/console.php <command>
 | `int` | `min`, `max` | A random integer between `min` and `max` (inclusive). |
 | `email` | | Valid email address. |
 | `ip` | | Valid IPv4 address. |
-| `regex` | `pattern` | Random string based on regex `pattern` |
-| `null` | | A NULL value |
-| `password` | `encryption` | A password |
+| `regex` | `pattern` | Random string based on regex `pattern`. |
+| `null` | | A NULL value. |
+| `password` | `encryption` | Password with a certain `encryption`. |
 
 #### Example
 ```yaml
