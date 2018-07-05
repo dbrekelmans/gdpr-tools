@@ -47,7 +47,7 @@ class Configuration {
       die;
     }
 
-    $this->replaceEnvVars($this->configuration);
+    $this->replaceEnvVars();
     $this->addPresets();
   }
 
@@ -181,11 +181,9 @@ class Configuration {
 
   /**
    * Replaces env vars in the configuration with actual env var values.
-   *
-   * @param array $configurationArray
    */
-  protected function replaceEnvVars(array $configurationArray) {
-    array_walk_recursive($configurationArray, function (&$value) {
+  protected function replaceEnvVars() {
+    array_walk_recursive($this->configuration, function (&$value) {
       if (
         substr($value, 0, strlen(self::ENV_VAR_PREFIX)) === self::ENV_VAR_PREFIX &&
         substr($value, -1, strlen(self::ENV_VAR_SUFFIX)) === self::ENV_VAR_SUFFIX
