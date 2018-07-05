@@ -15,14 +15,8 @@
   "require": {
     "symfony/yaml": "^4.1",
     "doctrine/dbal": "^2.7",
-    "symfony/console": "^4.1",
+    "symfony/console": "^3.4",
     "fzaninotto/faker": "^1.7",
     "gajus/paggern": "dev-master"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/dbrekelmans/paggern"
-    }
-  ]
+  }
 }
