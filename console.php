@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '../../autoload.php';
+require __DIR__ . '/../../autoload.php';
 
 use GdprTools\Command\AnonymiseCommand;
 use GdprTools\Command\TruncateCommand;
