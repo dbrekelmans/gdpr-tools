@@ -192,7 +192,7 @@ class Configuration {
       ) {
         $tempValue = $value;
 
-        $tempValue = substr($tempValue, strlen(self::ENV_VAR_PREFIX) - 1);
+        $tempValue = substr($tempValue, strlen(self::ENV_VAR_PREFIX));
         $tempValue = substr($tempValue, 0, strlen($tempValue) - strlen(self::ENV_VAR_SUFFIX));
 
         $envValue = getenv($tempValue);
